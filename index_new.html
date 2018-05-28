@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Login</title>
+		<link rel="stylesheet" type="text/css" href="index.css">
+		<link rel="stylesheet" type="text/css" href="bootstrap.css">
+		<script type="text/javascript" src="knockout-min.js"></script>
+		<!-- <script type="text/javascript" src="knockout-secure-binding.min.js"></script> -->
+	</head>
+	<body>
+        <div class="container">
+			<div class="nav-center">
+				<ul class="nav nav-tabs nav-justified">
+					<li class="active"><a data-toggle="tab" href="#offlineNotes">Offline</a></li>
+					<li><a data-toggle="tab" href="#onlineNotes">Shared</a></li>
+				</ul>
+			</div>
+            <div class="tab-content">
+                <div id="offlineNotes" class="tab-pane fade in active">
+                    <div class="main">
+						<div class="currentLink">
+							<div class="confirm">
+								<p class="question">Save this link?</p>
+								<p class="title"><span data-bind="text: currTabTitle"></span></p>
+								<button id="yes-btn" data-bind="click: storeLink">Yes</button>
+							</div>
+			
+							<div class="done">
+								<p>Link stored</p>
+							</div>
+						</div>
+						<!-- ko if: OfflineNotes().length > 0 -->
+							<div class="saved" data-bind="foreach: OfflineNotes">
+								<div class="link" data-bind="attr:{ id: Id}, click: $parent.clickOfflineNote, event: { contextmenu: $parent.showOptions }">
+									<p class="title" data-bind="text: Title"></p>
+									<div class="overflow">
+										<a class="url ellipsis" data-bind="text: Link, attr:{ href: Link}"></a>
+									</div>
+								</div>
+							</div>
+						<!-- /ko -->
+						<!-- ko if: OfflineNotes().length == 0 -->
+							<div class="saved">
+								No saved links
+							</div>
+						<!-- /ko -->
+						<div data-bind="click: deleteNote" class="right-click-menu">
+							Delete
+						</div>
+					</div>
+                </div>
+                <div id="onlineNotes" class="tab-pane fade">
+					<!-- ko if: OnlineNotes().length > 0 -->
+						<div class="savedNote" data-bind="with: editNote, visible: isNoteViewEnabled">
+							<div class="noteView" data-bind="attr:{ id: Id}">
+								<input type="text" data-bind="value: Title" autocorrect="off" autocapitalize="off" placeholder="Title" >
+								<textarea data-bind="value: Link" placeholder="Note"></textarea>
+								<button type="button" class="btn btn-primary" style="float: right" data-bind="click: $root.SaveNote"><i class="glyphicon glyphicon-floppy-save"></i></button>
+								<button type="button" class="btn btn-primary" style="float: right; margin-right: 5px;" data-bind="click: $root.ShowAllNotes"><i class="glyphicon glyphicon-backward"></i></button>
+							</div>
+						</div>
+						<div class="saved" data-bind="foreach: OnlineNotes, visible: !isNoteViewEnabled()">
+							<div class="link" data-bind="attr:{ id: Id}, click:  $parent.clickOnlineNote, event: { contextmenu: $parent.showOptions }">
+								<p class="title" data-bind="text: Title"></p>
+								<div class="overflow">
+									<p class="url ellipsis" data-bind="text: Link"></p> 
+								</div>
+							</div>
+						</div>
+						<!-- <i class="glyphicon glyphicon-floppy-save"></i> -->
+						<!-- <i class="glyphicon glyphicon-backward"></i> -->
+					<!-- /ko -->
+					<!-- ko if: OnlineNotes().length == 0 -->
+						<div class="saved">
+							No saved links
+						</div>
+					<!-- /ko -->
+					<div data-bind="click: deleteOnlineNote" class="right-click-menu">
+						Delete
+					</div>
+                </div>
+            </div>
+        </div>
+		<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src="bootstrap.js"></script>
+		<script type="text/javascript" src="dataprovider.js"></script>
+		<script type="text/javascript" src="script_new.js"></script>
+	</body>
+</html>
+
+							<!-- <div class="link" id="1">
+								<p class="title">Google</p>
+								<a class="url" href="http://google.co.in">Google</a>
+							</div>
+			
+							<div class="link" id="2">
+								<p class="title">Facebook</p>
+								<p class="url">http://facebook.com</p>
+							</div>
+			
+							<div class="link" id="2">
+								<p class="title">Twitter</p>
+								<p class="url">http://facebook.com</p>
+							</div> -->
