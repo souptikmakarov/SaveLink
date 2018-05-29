@@ -1,4 +1,5 @@
 $(function(){
+    // var baseUrl = "http://localhost:3000";
     var baseUrl = "https://noteappdbserver.herokuapp.com";
     function Note(){
         var self = this;
@@ -15,6 +16,7 @@ $(function(){
         self.rightClickedElem = ko.observable();
         self.isNoteViewEnabled = ko.observable(false);
         self.editNote = ko.observable(new Note().Id("xxx").Link("link").Title("title"));
+        self.isNewNote = ko.observable(false);
 
         self.OfflineNotesLoad =  function(){
             self.OfflineNotes([]);
@@ -28,10 +30,8 @@ $(function(){
                             note.Title(obj[k]["title"]);
                             note.Link(obj[k]["url"]);
                             self.OfflineNotes.push(note);
-                            // $(".saved").append("<div class='link' id="+ k +"><p class='title'>"+ obj[k]["title"] +"</p><p class='url'>"+ obj[k]["url"] +"</p></div>");
                         }
                     }
-                    // console.log(self.OfflineNotes());
                 }else{
                     $(".saved").text("No saved links");
                 }
@@ -40,9 +40,8 @@ $(function(){
 
         self.OnlineNotesLoad = function(){
             self.OnlineNotes([]);
-            serverCall(baseUrl + "/notes", "GET", null, 
+            getRequest(baseUrl + "/notes",
             function (data){
-                // console.log(data);
                 $.each(data, function(i, val){
                     var note = new Note();
                     note.Id(val._id);
@@ -52,7 +51,7 @@ $(function(){
                 });
             },
             function(error){
-                console.error(data);
+                console.error(error);
             },
             function(){});
         }
@@ -78,7 +77,11 @@ $(function(){
             });
         }
         self.clickOnlineNote = function(note){
-            self.editNote(note);
+            var editableNote = new Note()
+                                .Id(note.Id())
+                                .Title(note.Title())
+                                .Link(note.Link());
+            self.editNote(editableNote);
             self.isNoteViewEnabled(true);
         }
         self.clickOfflineNote = function(note){
@@ -112,7 +115,6 @@ $(function(){
         }
 
         self.showOptions = function(note){
-            // console.log(note);
             var x = event.pageY;
             var y = event.pageX;
             self.rightClickedElem(note);
@@ -132,29 +134,55 @@ $(function(){
         }
 
         self.SaveNote = function(){
-            serverCall(baseUrl + "/notes/edit", "POST", 
-                {
-                    "id": self.editNote().Id(), 
-                    "record": {
-                        Title:self.editNote().Title(),
-                        Content:{
-                            Message:self.editNote().Link()
+            if(self.isNewNote()){
+                var toInsert = {
+                    Title : self.editNote().Title(),
+                    Content : {
+                        Message : self.editNote().Link()
+                    }
+                }
+                postRequest(baseUrl + "/notes/add", toInsert, 
+                    function (data){
+                        if(data.hasOwnProperty("success")){
+                            self.OnlineNotesLoad();
+                            self.isNoteViewEnabled(false);
+                            self.editNote(null);
+                            self.isNewNote(false);
+                        }else{
+                            console.log(data.error);
+                        }
+                    },
+                    function(error){
+                        console.error(error);
+                    },
+                    function(){}
+                );
+            }else{
+                var toUpdate = {
+                    id : self.editNote().Id(),
+                    record : {
+                        Title : self.editNote().Title(),
+                        Content : {
+                            Message : self.editNote().Link()
                         }
                     }
-                }, 
-                function (data){
-                    console.log(data);
-                },
-                function(error){
-                    console.error(data);
-                },
-                function(){
-                    self.OnlineNotesLoad();
-                    self.isNoteViewEnabled(false);
-                    self.editNote(null);
-                }
-            );
-            console.log(self.editNote());
+                };
+                postRequest(baseUrl + "/notes/edit", toUpdate, 
+                    function (data){
+                        if(data.hasOwnProperty("success")){
+                            self.OnlineNotesLoad();
+                            self.isNoteViewEnabled(false);
+                            self.editNote(null);
+                        }else{
+                            console.log(data.error);
+                        }
+                    },
+                    function(error){
+                        console.error(error);
+                    },
+                    function(){}
+                );
+            }
         }
 
         self.ShowAllNotes = function(){
@@ -162,8 +190,34 @@ $(function(){
             self.editNote(null);
         }
 
-        self.deleteOnlineNote = function(note){
-            console.log(note());
+        self.deleteOnlineNote = function(){
+            console.log(self.rightClickedElem());
+            postRequest(baseUrl + "/notes/remove", 
+                {
+                    id: self.rightClickedElem().Id()
+                }, 
+                function (data){
+                    if(data.hasOwnProperty("success")){
+                        self.OnlineNotesLoad();
+                        self.rightClickedElem(null);
+                    }else{
+                        console.log(data.error);
+                    }
+                },
+                function(error){
+                    console.error(error);
+                },
+                function(){}
+            );
+            $(".right-click-menu").css({
+                display: 'none'
+            });
+        }
+
+        self.NewNote = function(){
+            self.editNote(new Note().Id("new").Title("").Link(""));
+            self.isNoteViewEnabled(true);
+            self.isNewNote(true);
         }
     }
 
@@ -172,7 +226,6 @@ $(function(){
     }, false);
 
     myVm = new ScribblePadViewModel();
-    // ko.bindingProvider.instance = new ko.secureBindingsProvider();
     ko.applyBindings(myVm);
 
     myVm.OfflineNotesLoad();

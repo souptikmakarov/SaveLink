@@ -35,10 +35,6 @@ body{
 	margin-top: -1px;
 	font-size: 15px;
 }
-/* .url{
-	height: ;
-} */
-
 .saved{
 	background: #eff0f1;
 	border-radius: 10px;
@@ -82,9 +78,9 @@ body{
 	text-align: center;
 }
 .nav-tabs > li {
-    float:none;
-    display:inline-block;
-	zoom:1;
+    float:none !important;
+	display:inline-block !important;
+	position: unset !important;
 }
 .overflow{
 	white-space: nowrap;
