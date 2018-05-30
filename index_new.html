@@ -51,8 +51,7 @@
                 </div>
                 <div id="onlineNotes" class="tab-pane fade">
 					<button class="btn btn-primary" style="width: 100%;" data-bind="click: NewNote">Add Note</button>
-					<!-- ko if: OnlineNotes().length > 0 -->
-						<div class="savedNote" data-bind="with: editNote, visible: isNoteViewEnabled">
+					<div class="savedNote" data-bind="with: editNote, visible: isNoteViewEnabled">
 							<div class="noteView" data-bind="attr:{ id: Id}">
 								<input type="text" data-bind="value: Title" autocorrect="off" autocapitalize="off" placeholder="Title" >
 								<textarea data-bind="value: Link" placeholder="Note"></textarea>
@@ -60,6 +59,7 @@
 								<button type="button" class="btn btn-primary" style="float: right; margin-right: 5px;" data-bind="click: $root.ShowAllNotes"><i class="glyphicon glyphicon-backward"></i></button>
 							</div>
 						</div>
+					<!-- ko if: OnlineNotes().length > 0 -->
 						<div class="saved" data-bind="foreach: OnlineNotes, visible: !isNoteViewEnabled()">
 							<div class="link" data-bind="attr:{ id: Id}, click:  $parent.clickOnlineNote, event: { contextmenu: $parent.showOptions }">
 								<p class="title" data-bind="text: Title"></p>
