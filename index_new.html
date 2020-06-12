@@ -50,26 +50,51 @@
 					</div>
                 </div>
                 <div id="onlineNotes" class="tab-pane fade">
-					<button class="btn btn-primary" style="width: 100%;" data-bind="click: NewNote">Add Note</button>
-					<div class="savedNote" data-bind="with: editNote, visible: isNoteViewEnabled">
-							<div class="noteView" data-bind="attr:{ id: Id}">
-								<input type="text" data-bind="value: Title" autocorrect="off" autocapitalize="off" placeholder="Title" >
-								<textarea data-bind="value: Link" placeholder="Note"></textarea>
-								<button type="button" class="btn btn-primary" style="float: right" data-bind="click: $root.SaveNote"><i class="glyphicon glyphicon-floppy-save"></i></button>
-								<button type="button" class="btn btn-primary" style="float: right; margin-right: 5px;" data-bind="click: $root.ShowAllNotes"><i class="glyphicon glyphicon-backward"></i></button>
-							</div>
+					<div class="row" data-bind="visible: !isNoteViewEnabled()">
+						<div class="col-xs-6">
+							<button class="btn btn-primary" style="width: 100%;" data-bind="click: NewNote">Add Note</button>
 						</div>
+						<div class="col-xs-6">
+							<button class="btn btn-primary" style="width: 100%;" data-bind="click: RefreshNotes">Refresh</button>
+						</div>
+					</div>
+					<div class="savedNote" data-bind="with: editNote, visible: isNoteViewEnabled">
+						<div class="noteView" data-bind="attr:{ id: Id}">
+							<input type="text" data-bind="value: Title" autocorrect="off" autocapitalize="off" placeholder="Title" >
+							<textarea data-bind="value: Link" placeholder="Note"></textarea>
+							<button type="button" class="btn btn-primary" style="float: right" data-bind="click: $root.SaveNote"><i class="glyphicon glyphicon-floppy-save"></i></button>
+							<button type="button" class="btn btn-primary" style="float: right; margin-right: 5px;" data-bind="click: $root.ShowAllNotes"><i class="glyphicon glyphicon-backward"></i></button>
+							<button type="button" class="btn btn-primary" style="float: right; margin-right: 5px;" data-bind="click: $root.FavourNote">
+								<!-- ko if: Favoured() -->
+									<i class="glyphicon glyphicon-star"></i>
+								<!-- /ko -->
+								<!-- ko if: !Favoured() -->
+								<i class="glyphicon glyphicon-star-empty"></i>
+								<!-- /ko -->
+							</button>
+						</div>
+					</div>
 					<!-- ko if: OnlineNotes().length > 0 -->
 						<div class="saved" data-bind="foreach: OnlineNotes, visible: !isNoteViewEnabled()">
 							<div class="link" data-bind="attr:{ id: Id}, click:  $parent.clickOnlineNote, event: { contextmenu: $parent.showOptions }">
-								<p class="title" data-bind="text: Title"></p>
+								<div class="row">
+									<div class="col-xs-10">
+										<p class="title" data-bind="text: Title"></p>
+									</div>
+									<div class="col-xs-2">
+										<!-- ko if: Favoured() -->
+											<i class="glyphicon glyphicon-star"></i>
+										<!-- /ko -->
+										<!-- ko if: !Favoured() -->
+											<i class="glyphicon glyphicon-star-empty"></i>
+										<!-- /ko -->
+									</div>
+								</div>
 								<div class="overflow">
 									<p class="url ellipsis" data-bind="text: Link"></p> 
 								</div>
 							</div>
 						</div>
-						<!-- <i class="glyphicon glyphicon-floppy-save"></i> -->
-						<!-- <i class="glyphicon glyphicon-backward"></i> -->
 					<!-- /ko -->
 					<!-- ko if: OnlineNotes().length == 0 -->
 						<div class="saved">
